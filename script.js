@@ -55,8 +55,6 @@ const section1 = document.querySelector('#section--1'); // Section 1
 
 btnScrollTo.addEventListener('click', function (e) {
   const section1Coords = section1.getBoundingClientRect();
-  console.log(section1Coords);
-  console.log(e.target.getBoundingClientRect());
 
   // Scrolling
   /*   window.scrollTo(
@@ -74,9 +72,57 @@ btnScrollTo.addEventListener('click', function (e) {
   section1.scrollIntoView({ behavior: 'smooth' });
 });
 
-const h1 = document.querySelector('h1');
+/* const h1 = document.querySelector('h1');
 h1.addEventListener('mouseenter', function (e) {
   console.log(
     `Great job, you are reading a heading! Specifically the ${e.target.innerHTML} heading!`
   );
-});
+}); */
+
+// rgb(225, 225, 225)
+const randomInt = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1) + min);
+const randomColor = () =>
+  `rgb(${randomInt(0, 255)},${randomInt(0, 255)},${randomInt(0, 255)})`;
+
+// Parent navbar
+document.querySelector('.nav').addEventListener(
+  'click',
+  function (e) {
+    e.preventDefault();
+    this.style.backgroundColor = randomColor();
+
+    console.log('NAVBAR TARGET', e.target);
+    console.log('NAVBAR CURRENTTARGET', e.currentTarget);
+  },
+  true
+);
+// Child navlinks
+document.querySelector('.nav__links').addEventListener(
+  'click',
+  function (e) {
+    e.preventDefault();
+    this.style.backgroundColor = randomColor();
+
+    console.log('CONTAINER TARGET', e.target);
+    console.log('CONTAINER CURRENTTARGET', e.currentTarget);
+    // e.stopPropagation();
+  },
+  true
+);
+// Grandchild link
+document.querySelector('.nav__link').addEventListener(
+  'click',
+  function (e) {
+    e.preventDefault();
+    this.style.backgroundColor = randomColor();
+
+    console.log('LINK TARGET', e.target);
+    console.log('LINK CURRENTTARGET', e.currentTarget);
+    // e.stopPropagation();
+  },
+  true
+);
+
+/* navs.style.backgroundColor = randomColor();
+navItems.forEach((item) => (item.style.backgroundColor = randomColor())); */
