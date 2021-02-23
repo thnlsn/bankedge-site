@@ -73,3 +73,10 @@ btnScrollTo.addEventListener('click', function (e) {
 
   section1.scrollIntoView({ behavior: 'smooth' });
 });
+
+const h1 = document.querySelector('h1');
+h1.addEventListener('mouseenter', function (e) {
+  console.log(
+    `Great job, you are reading a heading! Specifically the ${e.target.innerHTML} heading!`
+  );
+});
