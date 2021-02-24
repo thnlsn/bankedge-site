@@ -9,6 +9,10 @@ const overlay = document.querySelector('.overlay'); // Modal window itself
 const btnCloseModal = document.querySelector('.btn--close-modal'); // Close modal btn
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal'); // Both open modal btns
 
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+
 ///////////////////////////////////////
 // Modal window
 
@@ -60,10 +64,6 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
 ///////////////////////////////////////
 // Operations Tabbed Component
 
-const tabs = document.querySelectorAll('.operations__tab');
-const tabsContainer = document.querySelector('.operations__tab-container');
-const tabsContent = document.querySelectorAll('.operations__content');
-
 // Delegate events on tabs with a listener on the tab container parent
 tabsContainer.addEventListener('click', function (e) {
   const clicked = e.target.closest('.operations__tab'); // The tab Node of the clicked tab
@@ -82,4 +82,28 @@ tabsContainer.addEventListener('click', function (e) {
       tabsContent[i].classList.add('operations__content--active');
     }
   });
+});
+
+///////////////////////////////////////
+// Navbar Menu Fade Effect
+const nav = document.querySelector('.nav'); // Parent navbar
+
+// Function to fire on mouseover and mouseout of navlinks
+const handleHover = function (e) {
+  const link = e.target; // The link element that is hovered
+  const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+
+  siblings.forEach((el) => {
+    if (el !== link) el.style.opacity = this;
+  });
+};
+
+nav.addEventListener('mouseover', handleHover.bind(0.5));
+nav.addEventListener('mouseout', handleHover.bind(1));
+
+document.addEventListener('scroll', function () {
+  if (section1.getBoundingClientRect().top < nav.getBoundingClientRect().height)
+    nav.classList.add('sticky');
+  if (section1.getBoundingClientRect().top > nav.getBoundingClientRect().height)
+    nav.classList.remove('sticky');
 });
