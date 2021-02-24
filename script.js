@@ -57,5 +57,27 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
     ?.scrollIntoView({ behavior: 'smooth' });
 });
 
-const h1 = document.querySelector('.highlight');
-console.log(h1.nextElementSibling);
+///////////////////////////////////////
+// Operations Tabbed Component
+
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+
+// Delegate events on tabs with a listener on the tab container parent
+tabsContainer.addEventListener('click', function (e) {
+  const clicked = e.target.closest('.operations__tab'); // The tab Node of the clicked tab
+  if (!clicked) return; // Guard clause if the container is clicked
+
+  const targetTab = clicked.dataset.tab; // The tab number clicked
+  clicked.classList.add('operations__tab--active'); // Add the active style
+
+  // Remove active from tabs that arent the one clicked
+  tabs.forEach((tab) => {
+    if (tab.dataset.tab !== targetTab) {
+      tab.classList.remove('operations__tab--active');
+    }
+  });
+
+  // Activate content area
+});
