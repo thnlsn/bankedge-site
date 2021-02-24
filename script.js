@@ -69,15 +69,17 @@ tabsContainer.addEventListener('click', function (e) {
   const clicked = e.target.closest('.operations__tab'); // The tab Node of the clicked tab
   if (!clicked) return; // Guard clause if the container is clicked
 
-  const targetTab = clicked.dataset.tab; // The tab number clicked
-  clicked.classList.add('operations__tab--active'); // Add the active style
-
-  // Remove active from tabs that arent the one clicked
-  tabs.forEach((tab) => {
-    if (tab.dataset.tab !== targetTab) {
+  // Add --active class to clicked tab and remove from the others
+  tabs.forEach((tab, i) => {
+    // If the current tab in the loop is NOT the one clicked...
+    if (tab.dataset.tab !== clicked.dataset.tab) {
+      // Remove the --active classes from the tab and content
       tab.classList.remove('operations__tab--active');
+      tabsContent[i].classList.remove('operations__content--active');
+    } else {
+      // Otherwise, add --active to tab and content (the one clicked)
+      clicked.classList.add('operations__tab--active'); // Add the active style
+      tabsContent[i].classList.add('operations__content--active');
     }
   });
-
-  // Activate content area
 });
