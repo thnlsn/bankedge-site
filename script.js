@@ -142,18 +142,20 @@ headerObserver.observe(header);
 
 const sectionOptions = {
   root: null,
-  threshold: 0.45,
+  threshold: 0.3,
 };
 
 const sectionHighlight = function (entries) {
   const [{ isIntersecting, target: section }] = entries;
   const sectionNum = section.id[section.id.length - 1];
-  const navLink = document.querySelector(
-    `.nav__link[href='#section--${sectionNum}']`
-  );
+  const navLinks = document.querySelectorAll('.nav__link');
 
-  if (isIntersecting) navLink.style.transform = 'scale(1.2)';
-  else navLink.style.transform = 'scale(1)';
+  if (isIntersecting) {
+    navLinks.forEach((link) => {
+      link.style.transform = 'scale(1)';
+    });
+    navLinks[sectionNum - 1].style.transform = 'scale(1.2)';
+  } else navLinks[sectionNum - 1].style.transform = 'scale(1)';
 };
 
 console.log(section1);
