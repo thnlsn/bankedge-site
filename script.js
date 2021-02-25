@@ -3,6 +3,9 @@
 const btnScrollTo = document.querySelector('.btn--scroll-to'); // Learn more btn
 const section1 = document.querySelector('#section--1'); // Section 1
 
+const section2 = document.querySelector('#section--2');
+const section3 = document.querySelector('#section--3');
+
 const header = document.querySelector('.header'); // Header section
 const modal = document.querySelector('.modal'); // Greyed out background of modal
 const overlay = document.querySelector('.overlay'); // Modal window itself
@@ -101,9 +104,75 @@ const handleHover = function (e) {
 nav.addEventListener('mouseover', handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
 
-document.addEventListener('scroll', function () {
+///////////////////////////////////////
+// Navbar Sticky
+/* document.addEventListener('scroll', function () {
   if (section1.getBoundingClientRect().top < nav.getBoundingClientRect().height)
     nav.classList.add('sticky');
-  if (section1.getBoundingClientRect().top > nav.getBoundingClientRect().height)
+  else {
     nav.classList.remove('sticky');
-});
+  }
+}); */
+
+///////////////////////////////////////
+// Intersection Observer for Sticky Nav
+
+// Observer options, requires a root and a threshold property
+const stickyNavOptions = {
+  // You can select an element or pass null to observe the entire viewport
+  // The root property is the element you want to watch whether the observation target is intersecting, but null means it will be the viewport, so we are watching for whether section1 is intersecting the viewport
+  root: null,
+  // Percentage of intersection (percent that the target should be intersecting into the root), at which point the callback will be called
+  threshold: 0,
+  rootMargin: `-${nav.getBoundingClientRect().height}px`,
+};
+
+// Whenever the observe target intersects the viewport at the threshhold percentage, run this callback function
+const stickyNav = function (entries, observer) {
+  const [entry] = entries;
+  if (!entry.isIntersecting) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+};
+
+const headerObserver = new IntersectionObserver(stickyNav, stickyNavOptions);
+headerObserver.observe(header);
+
+///////////////////////////////////////
+// Intersection Observer for Nav Highlights
+
+const sectionOptions = {
+  root: null,
+  threshold: 0.45,
+};
+
+const sectionHighlight = function (entries) {
+  const [{ isIntersecting, target: section }] = entries;
+  const sectionNum = section.id[section.id.length - 1];
+  const navLink = document.querySelector(
+    `.nav__link[href='#section--${sectionNum}']`
+  );
+
+  if (isIntersecting) navLink.style.transform = 'scale(1.2)';
+  else navLink.style.transform = 'scale(1)';
+};
+
+console.log(section1);
+console.log(section2);
+
+const section1Observer = new IntersectionObserver(
+  sectionHighlight,
+  sectionOptions
+);
+section1Observer.observe(section1);
+
+const section2Observer = new IntersectionObserver(
+  sectionHighlight,
+  sectionOptions
+);
+section2Observer.observe(section2);
+
+const section3Observer = new IntersectionObserver(
+  sectionHighlight,
+  sectionOptions
+);
+section3Observer.observe(section3);
