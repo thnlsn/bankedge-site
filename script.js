@@ -6,6 +6,8 @@ const section1 = document.querySelector('#section--1'); // Section 1
 const section2 = document.querySelector('#section--2');
 const section3 = document.querySelector('#section--3');
 
+const section4 = document.querySelector('.section--sign-up');
+
 const header = document.querySelector('.header'); // Header section
 const modal = document.querySelector('.modal'); // Greyed out background of modal
 const overlay = document.querySelector('.overlay'); // Modal window itself
@@ -140,6 +142,7 @@ headerObserver.observe(header);
 ///////////////////////////////////////
 // Intersection Observer for Nav Highlights
 
+// Used for all enter section effects, so for the 3 tab sections highlighting their tabs in the navbar as well as the sections themselves appearing when they get close enough
 const sectionOptions = {
   root: null,
   threshold: 0.3,
@@ -147,34 +150,48 @@ const sectionOptions = {
 
 const sectionHighlight = function (entries) {
   const [{ isIntersecting, target: section }] = entries;
-  const sectionNum = section.id[section.id.length - 1];
-  const navLinks = document.querySelectorAll('.nav__link');
-
+  const sectionNum = section.id[section.id.length - 1]; // Section number
+  const navLinks = document.querySelectorAll('.nav__link'); // navlinks Nodelist
   if (isIntersecting) {
-    navLinks.forEach((link) => {
-      link.style.transform = 'scale(1)';
-    });
+    // When a new section is intersected, scale all to default (so that there is never 2 tabs being scaled up)
+    navLinks.forEach((link) => (link.style.transform = 'scale(1)'));
+    // The one that was intersected should be the only one scaled up
     navLinks[sectionNum - 1].style.transform = 'scale(1.2)';
-  } else navLinks[sectionNum - 1].style.transform = 'scale(1)';
+    // Else is for the case of the last section, when there are no more intersections to take place, which would leave the last tab scaled up even when left
+  } else navLinks.forEach((link) => (link.style.transform = 'scale(1)'));
 };
 
-console.log(section1);
-console.log(section2);
+///////////////////////////////////////
+// Intersection Observer for Sections Animating in
 
-const section1Observer = new IntersectionObserver(
+// Select all tab sections (not the contact section) by targetting all sections with id's prefixed with section (since contact doesn't have an id and all the other sections do, but with different suffixes/BEM modifiers)
+const allTabSections = document.querySelectorAll("[id^='section']");
+
+const tabSectionObserver = new IntersectionObserver(
   sectionHighlight,
   sectionOptions
 );
-section1Observer.observe(section1);
+allTabSections.forEach((section) => {
+  tabSectionObserver.observe(section);
+});
 
-const section2Observer = new IntersectionObserver(
-  sectionHighlight,
-  sectionOptions
-);
-section2Observer.observe(section2);
+///////////////////////////////////////
+// Intersection Observer for Nav Highlights
+const allSections = document.querySelectorAll('.section');
 
-const section3Observer = new IntersectionObserver(
-  sectionHighlight,
-  sectionOptions
-);
-section3Observer.observe(section3);
+const revealSection = (entries, observer) => {
+  const [{ isIntersecting, target: section }] = entries;
+  // Guard clause to do nothing if not intersecting
+  if (!isIntersecting) return;
+  // Remove the hidden as entry intersects
+  section.classList.remove('section--hidden');
+  // Detach the observer once it has been unhidden
+  observer.unobserve(section);
+};
+
+const sectionObserver = new IntersectionObserver(revealSection, sectionOptions);
+// For each section, add an observer observing that specific section
+allSections.forEach((section) => {
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden'); // Also add hidden class here instead of as a default in HTML so that users who disable JavaScript can still see it
+});
