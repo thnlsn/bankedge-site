@@ -12,6 +12,8 @@
   --color-tertiary-opacity: #ff58602d;
   --gradient-primary: linear-gradient(to top left, #39b385, #9be15d);
   --gradient-secondary: linear-gradient(to top left, #ffb003, #ffcb03);
+
+  --navbar-height: 9rem;
 }
 
 * {
@@ -39,6 +41,8 @@ body {
   border-top: 1px solid #ddd;
 
   transition: transform 1s, opacity 1s;
+  /* So that the scrollbar doesn't cover the headings of each section when scrolled to via the navbar, and -1px so that it remains fixed and visible when scrolling to section1, which intersects and becomes fixed at exactly the navbar height away from the actual section, so we make it 1px less to remain in that threshold */
+  scroll-margin: calc(var(--navbar-height) - 1px);
 }
 
 .section--hidden {
@@ -118,7 +122,7 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 9rem;
+  height: var(--navbar-height);
   width: 100%;
   padding: 0 6rem;
   z-index: 100;

@@ -142,12 +142,13 @@ headerObserver.observe(header);
 ///////////////////////////////////////
 // Intersection Observer for Nav Highlights
 
-// Used for all enter section effects, so for the 3 tab sections highlighting their tabs in the navbar as well as the sections themselves appearing when they get close enough
+// Options for all section enter effects, so for the 3 tab sections highlighting their tabs in the navbar as well as the sections themselves appearing when they get close enough
 const sectionOptions = {
   root: null,
-  threshold: 0.3,
+  threshold: 0.275,
 };
 
+// Function to highlight the tab in the nav as its section intersects
 const sectionHighlight = function (entries) {
   const [{ isIntersecting, target: section }] = entries;
   const sectionNum = section.id[section.id.length - 1]; // Section number
@@ -157,27 +158,31 @@ const sectionHighlight = function (entries) {
     navLinks.forEach((link) => (link.style.transform = 'scale(1)'));
     // The one that was intersected should be the only one scaled up
     navLinks[sectionNum - 1].style.transform = 'scale(1.2)';
-    // Else is for the case of the last section, when there are no more intersections to take place, which would leave the last tab scaled up even when left
-  } else navLinks.forEach((link) => (link.style.transform = 'scale(1)'));
+    // Else is for the case of the last section, when there are no more intersections to take place, which would leave the last tab scaled up even when left, so target the tab that is NO longer intersecting, and scale it back down
+  } else navLinks[sectionNum - 1].style.transform = 'scale(1)';
 };
-
-///////////////////////////////////////
-// Intersection Observer for Sections Animating in
 
 // Select all tab sections (not the contact section) by targetting all sections with id's prefixed with section (since contact doesn't have an id and all the other sections do, but with different suffixes/BEM modifiers)
 const allTabSections = document.querySelectorAll("[id^='section']");
 
+// Observer for each of the tabbed sections
 const tabSectionObserver = new IntersectionObserver(
   sectionHighlight,
   sectionOptions
 );
+// Observe each of the tabbed sections
 allTabSections.forEach((section) => {
   tabSectionObserver.observe(section);
 });
 
 ///////////////////////////////////////
-// Intersection Observer for Nav Highlights
-const allSections = document.querySelectorAll('.section');
+// Intersection Observer for Sections Animating In
+
+// All sections, tabbed ones and also the last contact one
+const allSections = [
+  ...allTabSections,
+  document.querySelector('.section--sign-up'),
+];
 
 const revealSection = (entries, observer) => {
   const [{ isIntersecting, target: section }] = entries;
