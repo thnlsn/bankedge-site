@@ -107,6 +107,9 @@ nav.addEventListener('mouseover', handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
 
 ///////////////////////////////////////
+// Lazy Loading Images
+
+///////////////////////////////////////
 // Navbar Sticky
 /* document.addEventListener('scroll', function () {
   if (section1.getBoundingClientRect().top < nav.getBoundingClientRect().height)
