@@ -145,7 +145,7 @@ headerObserver.observe(header);
 // Options for all section enter effects, so for the 3 tab sections highlighting their tabs in the navbar as well as the sections themselves appearing when they get close enough
 const sectionOptions = {
   root: null,
-  threshold: 0.275,
+  threshold: 0.15,
 };
 
 // Function to highlight the tab in the nav as its section intersects
@@ -218,11 +218,39 @@ const loadImg = function (entries, observer) {
   img.addEventListener('load', function (e) {
     this.classList.remove('lazy-img');
   });
+  observer.unobserve(img);
 };
 
 const imgObserver = new IntersectionObserver(loadImg, {
   root: null,
-  threshold: 0.5,
+  threshold: 0,
+  rootMargin: '200px',
 });
 
 imgTargets.forEach((img) => imgObserver.observe(img));
+
+///////////////////////////////////////
+// Lazy Loading Images
+const slides = document.querySelectorAll('.slide');
+slides.forEach((slide, index) => {
+  // For each slide, translate it 100% based on it's index
+  slide.style.transform = `translateX(${index * 100}%)`;
+});
+
+const sliderBtnLeft = document.querySelector('.slider__btn--left');
+const sliderBtnRight = document.querySelector('.slider__btn--right');
+
+const slide = function () {
+  slides.forEach((slide) => {
+    var regExp = /\(([^)]+)%\)/; // Only match between (<str>%)
+    var [, percentage] = regExp.exec(slide.style.transform); // match w/o capture
+    // Add or subtract 100 from transform % depending on which direction
+    slide.style.transform = `translateX(${
+      this === 'left' ? +percentage + 100 : +percentage - 100
+    }%)`;
+  });
+};
+
+// When left is clicked, loop through slides and decrease all transforms by 100%
+sliderBtnLeft.addEventListener('click', slide.bind('left'));
+sliderBtnRight.addEventListener('click', slide.bind('right'));
