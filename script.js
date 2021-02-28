@@ -107,9 +107,6 @@ nav.addEventListener('mouseover', handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
 
 ///////////////////////////////////////
-// Lazy Loading Images
-
-///////////////////////////////////////
 // Navbar Sticky
 /* document.addEventListener('scroll', function () {
   if (section1.getBoundingClientRect().top < nav.getBoundingClientRect().height)
@@ -203,3 +200,16 @@ allSections.forEach((section) => {
   sectionObserver.observe(section);
   section.classList.add('section--hidden'); // Also add hidden class here instead of as a default in HTML so that users who disable JavaScript can still see it
 });
+
+///////////////////////////////////////
+// Lazy Loading Images
+
+// Selecting all images with a data-src custom attribute (since those are the ones with alternate high res images)
+const imgTargets = document.querySelectorAll('img[data-src]');
+
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0.5,
+});
+
+imgTargets.forEach((img) => imgObserver.observe(img));
