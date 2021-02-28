@@ -207,6 +207,19 @@ allSections.forEach((section) => {
 // Selecting all images with a data-src custom attribute (since those are the ones with alternate high res images)
 const imgTargets = document.querySelectorAll('img[data-src]');
 
+const loadImg = function (entries, observer) {
+  const [{ isIntersecting, target: img }] = entries;
+  // If it is not intersecting but the cb is called, do nothing
+  if (!isIntersecting) return;
+  // Else switch the image
+  img.src = img.dataset.src;
+
+  // On the load event of the target img, unblur it
+  img.addEventListener('load', function (e) {
+    this.classList.remove('lazy-img');
+  });
+};
+
 const imgObserver = new IntersectionObserver(loadImg, {
   root: null,
   threshold: 0.5,
