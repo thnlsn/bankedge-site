@@ -234,6 +234,8 @@ imgTargets.forEach((img) => imgObserver.observe(img));
 const slides = document.querySelectorAll('.slide');
 const slider = document.querySelector('.slider');
 
+const dotsContainer = document.querySelector('.dots');
+
 slides.forEach((slide, index) => {
   // For each slide, translate it 100% based on it's index
   slide.style.transform = `translateX(${index * 100}%)`;
@@ -281,6 +283,16 @@ sliderBtnRight.addEventListener('click', slide.bind('right'));
 sliderBtnLeft.addEventListener('click', slide.bind('left'));
 
 document.addEventListener('keydown', function (e) {
-  if (e.key === 'ArrowRight') slide.bind('right')();
-  else if (e.key === 'ArrowLeft') slide.bind('left')();
+  e.key === 'ArrowRight' && slide.bind('right')();
+  e.key === 'ArrowLeft' && slide.bind('left')();
 });
+
+const handleDotClick = function ({ target }) {
+  if (target.classList.contains('dots__dot')) {
+    const { slide } = target.dataset;
+
+    goToSlide(slide);
+  }
+};
+
+dotsContainer.addEventListener('click', handleDotClick);
