@@ -237,9 +237,19 @@ const slider = document.querySelector('.slider');
 let dotsContainer = document.querySelector('.dots');
 
 // For each slide in the app, create an html button element to be a dot in the slider with a data-attribute of it's index
-slides.forEach((_, index) => {
-  dotsContainer.innerHTML += `<button class="dots__dot" data-slide="${index}"></button>`;
-});
+const createDots = function () {
+  slides.forEach(function (_, index) {
+    // Generate a button html element and add the correct classList and data-attribute + value
+    const btn = document.createElement('button');
+    btn.classList.add('dots__dot');
+    btn.dataset.slide = index;
+    dotsContainer.insertAdjacentElement(
+      // Before the element ends, but still inside the element
+      'beforeend',
+      btn
+    );
+  });
+};
 
 slides.forEach((slide, index) => {
   // For each slide, translate it 100% based on it's index
@@ -253,8 +263,6 @@ const sliderBtnRight = document.querySelector('.slider__btn--right');
 let currentSlide = 0;
 
 const goToSlide = (slide) => {
-  // console.log(currentSlide);
-  // console.log(slide);
   // For each slide Node
   slides.forEach((s, index) => {
     // Otherwise update the slide transforms accordingly
@@ -266,9 +274,6 @@ const goToSlide = (slide) => {
   });
   [...dotsContainer.children][slide].classList.add('dots__dot--active');
 };
-
-let num = '2';
-console.log(num++);
 
 // Function to take in the slide to move to, and update all translates to reflect that
 const slide = function () {
@@ -294,6 +299,7 @@ const slide = function () {
   }
   goToSlide(currentSlide);
 };
+createDots();
 goToSlide(0);
 
 // When left is clicked, loop through slides and decrease all transforms by 100%
