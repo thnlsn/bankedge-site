@@ -198,7 +198,7 @@ const sectionObserver = new IntersectionObserver(revealSection, sectionOptions);
 // For each section, add an observer observing that specific section
 allSections.forEach((section) => {
   sectionObserver.observe(section);
-  section.classList.add('section--hidden'); // Also add hidden class here instead of as a default in HTML so that users who disable JavaScript can still see it
+  // section.classList.add('section--hidden'); // Also add hidden class here instead of as a default in HTML so that users who disable JavaScript can still see it
 });
 
 ///////////////////////////////////////
@@ -230,8 +230,10 @@ const imgObserver = new IntersectionObserver(loadImg, {
 imgTargets.forEach((img) => imgObserver.observe(img));
 
 ///////////////////////////////////////
-// Lazy Loading Images
+// Slider
 const slides = document.querySelectorAll('.slide');
+const slider = document.querySelector('.slider');
+
 slides.forEach((slide, index) => {
   // For each slide, translate it 100% based on it's index
   slide.style.transform = `translateX(${index * 100}%)`;
@@ -240,17 +242,40 @@ slides.forEach((slide, index) => {
 const sliderBtnLeft = document.querySelector('.slider__btn--left');
 const sliderBtnRight = document.querySelector('.slider__btn--right');
 
-const slide = function () {
-  slides.forEach((slide) => {
-    var regExp = /\(([^)]+)%\)/; // Only match between (<str>%)
-    var [, percentage] = regExp.exec(slide.style.transform); // match w/o capture
-    // Add or subtract 100 from transform % depending on which direction
-    slide.style.transform = `translateX(${
-      this === 'left' ? +percentage + 100 : +percentage - 100
-    }%)`;
+// State variable to retain what slide is currently centered
+let currentSlide = 0;
+
+const goToSlide = (slide) => {
+  // For each slide Node
+  slides.forEach((s, index) => {
+    // Otherwise update the slide transforms accordingly
+    s.style.transform = `translateX(${(index - slide) * 100}%)`;
   });
 };
 
+const slide = function () {
+  // Function to take in the slide to move to, and update all translates to reflect that
+  if (this === 'right') {
+    if (currentSlide + 1 === slides.length) {
+      currentSlide = 0;
+    } else {
+      // Increase the slide
+      currentSlide++;
+      // Otherwise update the slide transforms accordingly
+    }
+  } else if (this === 'left') {
+    if (currentSlide === 0) {
+      currentSlide = slides.length - 1;
+    } else {
+      // Decrease the slide
+      currentSlide--;
+      // If it is less than 0, set it to the last slide
+    }
+  }
+  goToSlide(currentSlide);
+};
+// goToSlide(0);
+
 // When left is clicked, loop through slides and decrease all transforms by 100%
-sliderBtnLeft.addEventListener('click', slide.bind('left'));
 sliderBtnRight.addEventListener('click', slide.bind('right'));
+sliderBtnLeft.addEventListener('click', slide.bind('left'));
