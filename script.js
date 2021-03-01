@@ -279,3 +279,8 @@ const slide = function () {
 // When left is clicked, loop through slides and decrease all transforms by 100%
 sliderBtnRight.addEventListener('click', slide.bind('right'));
 sliderBtnLeft.addEventListener('click', slide.bind('left'));
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'ArrowRight') slide.bind('right')();
+  else if (e.key === 'ArrowLeft') slide.bind('left')();
+});
