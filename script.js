@@ -234,7 +234,12 @@ imgTargets.forEach((img) => imgObserver.observe(img));
 const slides = document.querySelectorAll('.slide');
 const slider = document.querySelector('.slider');
 
-const dotsContainer = document.querySelector('.dots');
+let dotsContainer = document.querySelector('.dots');
+
+// For each slide in the app, create an html button element to be a dot in the slider with a data-attribute of it's index
+slides.forEach((_, index) => {
+  dotsContainer.innerHTML += `<button class="dots__dot" data-slide="${index}"></button>`;
+});
 
 slides.forEach((slide, index) => {
   // For each slide, translate it 100% based on it's index
@@ -265,18 +270,20 @@ const goToSlide = (slide) => {
 let num = '2';
 console.log(num++);
 
+// Function to take in the slide to move to, and update all translates to reflect that
 const slide = function () {
-  // Function to take in the slide to move to, and update all translates to reflect that
-
+  // If right...
   if (this === 'right') {
+    // If the current slide corrected for zero-basing is the same as the total # of slides (so last), go back to slide 0
     if (currentSlide + 1 === slides.length) {
       currentSlide = 0;
     } else {
       // Increase the slide
       currentSlide++;
-      // Otherwise update the slide transforms accordingly
     }
+    // Otherwise if left...
   } else if (this === 'left') {
+    // If already on the first slide (0), go to the last slide, which has -1 due to needing to be zero-based
     if (currentSlide === 0) {
       currentSlide = slides.length - 1;
     } else {
@@ -294,17 +301,17 @@ sliderBtnRight.addEventListener('click', slide.bind('right'));
 sliderBtnLeft.addEventListener('click', slide.bind('left'));
 
 document.addEventListener('keydown', function (e) {
-  e.key === 'ArrowRight' && slide.bind('right')();
-  e.key === 'ArrowLeft' && slide.bind('left')();
+  // Short circuit if keydown is anything other than the following:
+  e.key === 'ArrowRight' && slide.bind('right')(); // Slide right
+  e.key === 'ArrowLeft' && slide.bind('left')(); // Slide left
 });
 
 const handleDotClick = function ({ target }) {
   if (target.classList.contains('dots__dot')) {
-    const { slide } = target.dataset;
-    // console.log(slide);
+    const { slide } = target.dataset; // Taking slide out of the dataset object
     // Convert slide to a number before assigning because otherwise it will be a string of the slide number mess up the conditionals that check whether it would exceed or preceed the first/last slide (during the process of adding 1 to the slide Nodelist length due to zero-based comparison to length value of Nodelist.length)
     currentSlide = +slide;
-    goToSlide(currentSlide);
+    goToSlide(currentSlide); // Go to new slide
   }
 };
 
