@@ -248,15 +248,26 @@ const sliderBtnRight = document.querySelector('.slider__btn--right');
 let currentSlide = 0;
 
 const goToSlide = (slide) => {
+  // console.log(currentSlide);
+  // console.log(slide);
   // For each slide Node
   slides.forEach((s, index) => {
     // Otherwise update the slide transforms accordingly
     s.style.transform = `translateX(${(index - slide) * 100}%)`;
   });
+
+  [...dotsContainer.children].forEach((dot) => {
+    dot.classList.remove('dots__dot--active');
+  });
+  [...dotsContainer.children][slide].classList.add('dots__dot--active');
 };
+
+let num = '2';
+console.log(num++);
 
 const slide = function () {
   // Function to take in the slide to move to, and update all translates to reflect that
+
   if (this === 'right') {
     if (currentSlide + 1 === slides.length) {
       currentSlide = 0;
@@ -276,7 +287,7 @@ const slide = function () {
   }
   goToSlide(currentSlide);
 };
-// goToSlide(0);
+goToSlide(0);
 
 // When left is clicked, loop through slides and decrease all transforms by 100%
 sliderBtnRight.addEventListener('click', slide.bind('right'));
@@ -290,8 +301,10 @@ document.addEventListener('keydown', function (e) {
 const handleDotClick = function ({ target }) {
   if (target.classList.contains('dots__dot')) {
     const { slide } = target.dataset;
-
-    goToSlide(slide);
+    // console.log(slide);
+    // Convert slide to a number before assigning because otherwise it will be a string of the slide number mess up the conditionals that check whether it would exceed or preceed the first/last slide (during the process of adding 1 to the slide Nodelist length due to zero-based comparison to length value of Nodelist.length)
+    currentSlide = +slide;
+    goToSlide(currentSlide);
   }
 };
 
