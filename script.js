@@ -198,7 +198,7 @@ const sectionObserver = new IntersectionObserver(revealSection, sectionOptions);
 // For each section, add an observer observing that specific section
 allSections.forEach((section) => {
   sectionObserver.observe(section);
-  // section.classList.add('section--hidden'); // Also add hidden class here instead of as a default in HTML so that users who disable JavaScript can still see it
+  section.classList.add('section--hidden'); // Also add hidden class here instead of as a default in HTML so that users who disable JavaScript can still see it
 });
 
 ///////////////////////////////////////
@@ -231,94 +231,122 @@ imgTargets.forEach((img) => imgObserver.observe(img));
 
 ///////////////////////////////////////
 // Slider
-const slides = document.querySelectorAll('.slide');
-const slider = document.querySelector('.slider');
 
-let dotsContainer = document.querySelector('.dots');
+const slider = function () {
+  // SELECTORS
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.querySelector('.dots');
+  const sliderBtnLeft = document.querySelector('.slider__btn--left');
+  const sliderBtnRight = document.querySelector('.slider__btn--right');
 
-// For each slide in the app, create an html button element to be a dot in the slider with a data-attribute of it's index
-const createDots = function () {
-  slides.forEach(function (_, index) {
-    // Generate a button html element and add the correct classList and data-attribute + value
-    const btn = document.createElement('button');
-    btn.classList.add('dots__dot');
-    btn.dataset.slide = index;
-    dotsContainer.insertAdjacentElement(
-      // Before the element ends, but still inside the element
-      'beforeend',
-      btn
-    );
+  // STATE
+  // State variable to retain what slide is currently centered
+  let currentSlide = 0;
+
+  // FUNCTIONS
+  // Function to create the dots dynamically based on slide count in HTML
+  const createDots = function () {
+    slides.forEach(function (_, index) {
+      // Generate a button html element and add the correct classList and data-attribute + value
+      const btn = document.createElement('button');
+      btn.classList.add('dots__dot');
+      btn.dataset.slide = index;
+      dotsContainer.insertAdjacentElement(
+        // Before the element ends, but still inside the element
+        'beforeend',
+        btn
+      );
+    });
+  };
+
+  // Function to actually change all slide translateX values
+  const goToSlide = (slide) => {
+    // For each slide Node
+    slides.forEach((s, index) => {
+      // Otherwise update the slide transforms accordingly
+      s.style.transform = `translateX(${(index - slide) * 100}%)`;
+    });
+
+    // Because goToSlide is called in every single scenario where we need the slide to change, we set the active styles of dots here, since they need to change no matter if we handle a dot click, an arrow click, or arrow keydown event
+    [...dotsContainer.children].forEach((dot) => {
+      dot.classList.remove('dots__dot--active');
+    });
+    [...dotsContainer.children][slide].classList.add('dots__dot--active');
+  };
+
+  // Function to take in the slide to move to and update all slide translates to reflect that
+  const slide = function () {
+    // If right...
+    if (this === 'right') {
+      // If the current slide corrected for zero-basing is the same as the total # of slides (so last), go back to slide 0
+      if (currentSlide + 1 === slides.length) {
+        currentSlide = 0;
+      } else {
+        // Increase the slide
+        currentSlide++;
+      }
+      // Otherwise if left...
+    } else if (this === 'left') {
+      // If already on the first slide (0), go to the last slide, which has -1 due to needing to be zero-based
+      if (currentSlide === 0) {
+        currentSlide = slides.length - 1;
+      } else {
+        // Decrease the slide
+        currentSlide--;
+        // If it is less than 0, set it to the last slide
+      }
+    }
+    goToSlide(currentSlide);
+  };
+
+  // Function to change the slide and call the goToSlide function when a dot button is clicked
+  const handleDotClick = function ({ target }) {
+    if (target.classList.contains('dots__dot')) {
+      const { slide } = target.dataset; // Taking slide out of the dataset object
+      // Convert slide to a number before assigning because otherwise it will be a string of the slide number mess up the conditionals that check whether it would exceed or preceed the first/last slide (during the process of adding 1 to the slide Nodelist length due to zero-based comparison to length value of Nodelist.length)
+      currentSlide = +slide;
+      goToSlide(currentSlide); // Go to new slide
+    }
+  };
+
+  const startTop = function () {
+    window.onbeforeunload = function () {
+      window.scrollTo(0, 0);
+    };
+  };
+
+  // Initialize the slider
+  const init = function () {
+    startTop();
+    createDots(); // Create the correct number of dotes based in slides
+    goToSlide(0); // Initialize the values of each slides translateX transform to where the first slide is not translated
+  };
+  init();
+
+  // EVENT LISTENERS
+  // When left is clicked, loop through slides and decrease all transforms by 100%
+  sliderBtnRight.addEventListener('click', slide.bind('right'));
+  sliderBtnLeft.addEventListener('click', slide.bind('left'));
+
+  document.addEventListener('keydown', function (e) {
+    // Short circuit if keydown is anything other than the following:
+    e.key === 'ArrowRight' && slide.bind('right')(); // Slide right
+    e.key === 'ArrowLeft' && slide.bind('left')(); // Slide left
   });
-};
 
-slides.forEach((slide, index) => {
-  // For each slide, translate it 100% based on it's index
-  slide.style.transform = `translateX(${index * 100}%)`;
+  dotsContainer.addEventListener('click', handleDotClick);
+};
+slider(); // Call the slider to generate and setup
+
+document.addEventListener('DOMContentLoaded', function (e) {
+  console.log('HTML parsed and DOM tree built!', e);
 });
 
-const sliderBtnLeft = document.querySelector('.slider__btn--left');
-const sliderBtnRight = document.querySelector('.slider__btn--right');
-
-// State variable to retain what slide is currently centered
-let currentSlide = 0;
-
-const goToSlide = (slide) => {
-  // For each slide Node
-  slides.forEach((s, index) => {
-    // Otherwise update the slide transforms accordingly
-    s.style.transform = `translateX(${(index - slide) * 100}%)`;
-  });
-
-  [...dotsContainer.children].forEach((dot) => {
-    dot.classList.remove('dots__dot--active');
-  });
-  [...dotsContainer.children][slide].classList.add('dots__dot--active');
-};
-
-// Function to take in the slide to move to, and update all translates to reflect that
-const slide = function () {
-  // If right...
-  if (this === 'right') {
-    // If the current slide corrected for zero-basing is the same as the total # of slides (so last), go back to slide 0
-    if (currentSlide + 1 === slides.length) {
-      currentSlide = 0;
-    } else {
-      // Increase the slide
-      currentSlide++;
-    }
-    // Otherwise if left...
-  } else if (this === 'left') {
-    // If already on the first slide (0), go to the last slide, which has -1 due to needing to be zero-based
-    if (currentSlide === 0) {
-      currentSlide = slides.length - 1;
-    } else {
-      // Decrease the slide
-      currentSlide--;
-      // If it is less than 0, set it to the last slide
-    }
-  }
-  goToSlide(currentSlide);
-};
-createDots();
-goToSlide(0);
-
-// When left is clicked, loop through slides and decrease all transforms by 100%
-sliderBtnRight.addEventListener('click', slide.bind('right'));
-sliderBtnLeft.addEventListener('click', slide.bind('left'));
-
-document.addEventListener('keydown', function (e) {
-  // Short circuit if keydown is anything other than the following:
-  e.key === 'ArrowRight' && slide.bind('right')(); // Slide right
-  e.key === 'ArrowLeft' && slide.bind('left')(); // Slide left
+window.addEventListener('load', function (e) {
+  console.log('Page fully loaded', e);
 });
 
-const handleDotClick = function ({ target }) {
-  if (target.classList.contains('dots__dot')) {
-    const { slide } = target.dataset; // Taking slide out of the dataset object
-    // Convert slide to a number before assigning because otherwise it will be a string of the slide number mess up the conditionals that check whether it would exceed or preceed the first/last slide (during the process of adding 1 to the slide Nodelist length due to zero-based comparison to length value of Nodelist.length)
-    currentSlide = +slide;
-    goToSlide(currentSlide); // Go to new slide
-  }
-};
-
-dotsContainer.addEventListener('click', handleDotClick);
+/* window.addEventListener('beforeunload', function (e) {
+  console.log('Page is just about to unload', e);
+  e.returnValue = '';
+}); */
